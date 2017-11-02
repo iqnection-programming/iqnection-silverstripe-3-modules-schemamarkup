@@ -1,0 +1,9 @@
+SiteConfig:
+  extensions:
+    - SchemaMarkup_SiteConfig_Extension
+Page:
+  extensions:
+    - SchemaMarkup_Page_Extension
+Page_Controller:
+  extensions:
+    - SchemaMarkup_Page_Controller_Extension

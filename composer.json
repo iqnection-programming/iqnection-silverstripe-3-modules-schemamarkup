@@ -1,0 +1,19 @@
+{
+	"name": "iqnection-modules/schemamarkup",
+	"description": "SilverStripe 3 Schema.org Markup Builder",
+	"type": "silverstripe-module",
+	"keywords": ["iqnection","pages","schema","microdata"],
+	"authors": [
+		{
+			"name": "IQnection",
+            "homepage": "http://www.iqnection.com"
+		}
+	],
+	"require": {
+		"silverstripe/framework": ">=3.0",
+		"nathancox/codeeditorfield" : "dev-master",
+	},
+	"extra": {
+		"installer-name": "iq-schemamarkup"
+	}
+}
