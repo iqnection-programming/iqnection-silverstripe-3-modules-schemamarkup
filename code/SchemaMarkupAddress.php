@@ -81,6 +81,20 @@ class SchemaMarkupPostalAddress extends SchemaMarkup
 		if ($this->PhoneNumber) { $markup['telephone'] = $this->PhoneNumber; }
 		if ($this->FaxNumber) { $markup['faxNumber'] = $this->FaxNumber; }
 		
+		if ($extra = $this->AddressExtra)
+		{
+			// make the text a valid JSON object
+			if (!preg_match('/^{/',$extra)) { $extra = '{'.$extra; }
+			if (!preg_match('/}$/',$extra)) { $extra .= '}'; }
+			if ($extra = json_decode(trim($extra),1))
+			{
+				foreach($extra as $extraName => $extraValue)
+				{
+					$markup[$extraName] = $extraValue;
+				}
+			}
+		}
+		
 		if ($this->SchemaMarkupOpeningHoursSpecifications()->Count())
 		{
 			$hoursMarkup = array();

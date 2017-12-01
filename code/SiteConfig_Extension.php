@@ -9,6 +9,7 @@ class SchemaMarkup_SiteConfig_Extension extends DataExtension
 		'SchemaDescription' => 'Text',
 		'SchemaExtra' => 'Text',
 		'SchemaPriceRange' => 'Varchar(5)',
+		'SchemaExtraSameAs' => 'Text',
 		'SchemaMarkupCache' => 'Text'
 	);
 	
@@ -64,6 +65,13 @@ class SchemaMarkup_SiteConfig_Extension extends DataExtension
 			$this->owner->SchemaMarkupPostalAddresses(),
 			GridFieldConfig_RecordEditor::create()
 		));
+		
+		$fields->addFieldToTab('Root.Developer.SchemaMarkup.Extra', TextareaField::create('SchemaExtraSameAs','Additional SameAs Items')
+			->setDescription('Should be full URLs, One per line') );
+		$fields->addFieldToTab('Root.Developer.SchemaMarkup.Extra', CodeeditorField::create('SchemaExtra','Additional JSON Markup to add to Root Object')
+			->setDescription('Must use Double Quotes in JSON objects')
+			->addExtraClass('stacked')
+			->setRows(20) );
 		
 		if ($markup = $this->SchemaMarkup())
 		{
@@ -128,9 +136,9 @@ class SchemaMarkup_SiteConfig_Extension extends DataExtension
 		if ($extra = $this->owner->SchemaExtra)
 		{
 			// make the text a valid JSON object
-			if (!preg_match('^/{/',$extra)) { $extra = '{'.$extra; }
+			if (!preg_match('/^{/',$extra)) { $extra = '{'.$extra; }
 			if (!preg_match('/}$/',$extra)) { $extra .= '}'; }
-			if ($extra = json_decode($extra,1))
+			if ($extra = json_decode(trim($extra),1))
 			{
 				foreach($extra as $extraName => $extraValue)
 				{
@@ -182,6 +190,16 @@ class SchemaMarkup_SiteConfig_Extension extends DataExtension
 			$markup[] = $BlogPage->BlogURL;
 		}
 		
+		if ($SchemaExtraSameAs = $this->owner->SchemaExtraSameAs)
+		{
+			foreach(explode("\n",$SchemaExtraSameAs) as $extraSameAs)
+			{
+				if ($extraSameAs = trim($extraSameAs))
+				{
+					$markup[] = $extraSameAs;
+				}
+			}
+		}
 		$this->owner->extend('updateSameAsSchemaMarkup',$markup);
 		return (count($markup)) ? $markup : false;
 	}
@@ -193,13 +211,10 @@ class SchemaMarkup_SiteConfig_Extension extends DataExtension
 	
 	public function onBeforeWrite()
 	{
-		if ( ($this->owner->SchemaEnableMarkup) && (!$this->owner->SchemaMarkupCache) )
+		$this->owner->SchemaMarkupCache = '';
+		if ($this->owner->SchemaEnableMarkup)
 		{
 			$this->owner->SchemaMarkupCache = $this->generateSchemaMarkup();
-		}
-		elseif ( (!$this->owner->SchemaEnableMarkup) && ($this->owner->SchemaMarkupCache) )
-		{
-			$this->SchemaMarkupCache = '';
 		}
 	}
 	
