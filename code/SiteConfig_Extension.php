@@ -88,17 +88,21 @@ class SchemaMarkup_SiteConfig_Extension extends DataExtension
 			'@type' => ($this->owner->SchemaBusinessType) ? $this->owner->SchemaBusinessType : 'Organization',
 			'url' => Director::absoluteBaseURL()
 		);
+		$ThemeDir = ($this->owner->Theme) ? $this->owner->Theme : $this->owner->ThemeDir();
+		if (!preg_match('/themes/',$ThemeDir))
+		{
+			$ThemeDir = 'themes/'.$ThemeDir;
+		}
 		if ($this->owner->SchemaName) { $markup['name'] = $this->owner->SchemaName; }
 			elseif ($this->owner->Title) { $markup['name'] = $this->owner->Title; }
 		if ($this->owner->SchemaDescription) { $markup['description'] = $this->owner->SchemaDescription; }
 			elseif ($homeDescription = SiteTree::get()->filter('ClassName','HomePage')->First()->MetaDescription) { $markup['description'] = $homeDescription; }
 		if ($this->owner->SchemaLogo()->Exists()) { $markup['logo'] = $this->owner->SchemaLogo()->AbsoluteLink(); }
-			elseif (Director::fileExists($this->owner->ThemeDir().'/images/logo.png')) { $markup['logo'] = Director::absoluteURL($this->owner->ThemeDir().'/images/logo.png'); }
+			elseif (Director::fileExists($ThemeDir.'/images/logo.png')) { $markup['logo'] = Director::absoluteURL($ThemeDir.'/images/logo.png'); }
 		if ($this->owner->SchemaBusinessImage()->Exists()) { $markup['image'] = $this->owner->SchemaBusinessImage()->AbsoluteLink(); }
 			elseif ($this->owner->SchemaLogo()->Exists()) { $markup['image'] = $this->owner->SchemaLogo()->AbsoluteLink(); }
-			elseif (Director::fileExists($this->owner->ThemeDir().'/images/logo.png')) { $markup['image'] = Director::absoluteURL($this->owner->ThemeDir().'/images/logo.png'); }
+			elseif (Director::fileExists($ThemeDir.'/images/logo.png')) { $markup['image'] = Director::absoluteURL($ThemeDir.'/images/logo.png'); }
 		if ($this->owner->SchemaPriceRange) { $markup['priceRange'] = $this->owner->SchemaPriceRange; }	
-			
 		if ($this->owner->SchemaMarkupPostalAddresses()->Count())
 		{
 			$addresses = array();

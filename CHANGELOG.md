@@ -2,6 +2,9 @@
 # Change Log
 
 
+## [1.0.1]
+- A bug already, fixed auto retrieving theme logo, If theme is not selected in SiteConfig, we use current CMS theme, which is usually "mysite"
+
 ## [1.0.0]
 - bug fixes
 - stable commit
