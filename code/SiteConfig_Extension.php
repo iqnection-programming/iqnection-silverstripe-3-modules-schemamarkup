@@ -180,6 +180,7 @@ class SchemaMarkup_SiteConfig_Extension extends DataExtension
 			'Yelp',
 			'Tumblr',
 			'Houzz',
+			'AngiesList'
 		);
 		foreach($socialSites as $socialSite)
 		{
@@ -188,10 +189,6 @@ class SchemaMarkup_SiteConfig_Extension extends DataExtension
 		if ($HubSpotBlogPage = SiteTree::get()->Filter('ClassName','HubSpotBlogPage')->First())
 		{
 			$markup[] = $HubSpotBlogPage->BlogURL;
-		}
-		if ($BlogPage = SiteTree::get()->Filter('ClassName','BlogPage')->First())
-		{
-			$markup[] = $BlogPage->BlogURL;
 		}
 		
 		if ($SchemaExtraSameAs = $this->owner->SchemaExtraSameAs)

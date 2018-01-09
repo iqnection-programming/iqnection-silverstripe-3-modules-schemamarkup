@@ -6,7 +6,7 @@ class SchemaMarkupOpeningHoursSpecification extends SchemaMarkup
 	private static $plural_name = 'Business Hours';
 	
 	private static $db = array(
-		'DayOfWeek' => "Enum('Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday')",
+		'DayOfWeek' => "Varchar(255)", //"Enum('Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday')",
 		'OpenTime' => 'Varchar(255)',
 		'CloseTime' => 'Varchar(255)',
 	);
@@ -34,17 +34,39 @@ class SchemaMarkupOpeningHoursSpecification extends SchemaMarkup
 	public function getCMSFields()
 	{
 		$fields = parent::getCMSFields();
+		$daysOfWeek = [
+			'Sunday' => 'Sunday',
+			'Monday' => 'Monday',
+			'Tuesday' => 'Tuesday',
+			'Wednesday' => 'Wednesday',
+			'Thursday' => 'Thursday',
+			'Friday' => 'Friday',
+			'Saturday' => 'Saturday'
+		];
+		$fields->replaceField('DayOfWeek', CheckboxSetField::create('DayOfWeek','Day(s) Of Week',$daysOfWeek) );
 		$fields->dataFieldByName('OpenTime')->setDescription('Enter a complete time');
 		$fields->dataFieldByName('CloseTime')->setDescription('Enter a complete time');
 		return $fields;
 	}
 	
+	public function validate()
+	{
+		$result = parent::validate();
+		if (!$this->DayOfWeek) { $result->error('Please select at least one day of the week'); }
+		return $result;
+	}
+	
 	public function buildSchemaMarkup()
 	{
 		if (!$this->OpenTime && !$this->CloseTime) { return false; }
+		$days = [];
+		foreach(explode(',',$this->DayOfWeek) as $day)
+		{
+			$days[] = 'http://schema.org/'.$day;
+		}
 		return array(
 			'@type' => 'OpeningHoursSpecification',
-			'dayOfWeek' => 'http://schema.org/'.$this->DayOfWeek,
+			'dayOfWeek' => $days,
 			'opens' => date('H:i:s',strtotime('2000-01-01 '.$this->OpenTime)),
 			'closes' => date('H:i:s',strtotime('2000-01-01 '.$this->CloseTime)),
 		);
